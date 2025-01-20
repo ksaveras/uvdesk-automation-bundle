@@ -1,2 +1,7 @@
-Resources/views/* linguist-vendored
-Templates/* linguist-vendored
+/Resources/views/* linguist-vendored
+/Templates/* linguist-vendored
+/.git* export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/composer.lock export-ignore
+/phpstan.dist.neon export-ignore
+/phpunit.xml.dist export-ignore
