@@ -1,0 +1,26 @@
+parameters:
+    level: 6
+    paths:
+        - .
+    excludePaths:
+        - vendor
+
+    strictRules:
+        disallowedLooseComparison: false
+        booleansInConditions: false
+        uselessCast: false
+        requireParentConstructorCall: false
+        disallowedBacktick: false
+        disallowedEmpty: false
+        disallowedImplicitArrayCreation: false
+        disallowedShortTernary: false
+        overwriteVariablesWithLoop: false
+        closureUsesThis: false
+        matchingInheritedMethodNames: false
+        numericOperandsInArithmeticOperators: false
+        strictFunctionCalls: false
+        dynamicCallOnStaticMethod: false
+        switchConditionsMatchingType: false
+        noVariableVariables: false
+        strictArrayFilter: false
+        illegalConstructorMethodCall: false
