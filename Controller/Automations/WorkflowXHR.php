@@ -4,6 +4,7 @@ namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -12,38 +13,28 @@ use Webkul\UVDesk\AutomationBundle\EventListener\WorkflowListener;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\TicketService;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
-class WorkflowXHR extends AbstractController
+final class WorkflowXHR extends AbstractController
 {
-    private $userService;
-    private $translator;
-    private $workflowListnerService;
-    private $ticketService;
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly WorkflowListener $workflowListenerService,
+        private readonly TicketService $ticketService,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
-    public function __construct(UserService $userService, WorkflowListener $workflowListnerService, TicketService $ticketService, TranslatorInterface $translator)
-    {
-        $this->userService = $userService;
-        $this->ticketService = $ticketService;
-        $this->workflowListnerService = $workflowListnerService;
-        $this->translator = $translator;
-    }
-
-    public function workflowsListXhr(Request $request, ContainerInterface $container)
+    public function workflowsListXhr(Request $request, ContainerInterface $container): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $json = [];
         $repository = $this->getDoctrine()->getRepository(Entity\Workflow::class);
         $json = $repository->getWorkflows($request->query, $container);
 
-        $response = new Response(json_encode($json));
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return new JsonResponse($json);
     }
 
-    public function WorkflowsxhrAction(Request $request)
+    public function WorkflowsxhrAction(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -52,7 +43,7 @@ class WorkflowXHR extends AbstractController
         $json = [];
         $error = false;
         if ($request->isXmlHttpRequest()) {
-            if ('POST' == $request->getMethod()) {
+            if ('POST' === $request->getMethod()) {
                 $em = $this->getDoctrine()->getManager();
                 // sort order update
                 $workflows = $em->getRepository(Entity\Workflow::class)->findAll();
@@ -75,7 +66,7 @@ class WorkflowXHR extends AbstractController
                     $json['alertClass'] = 'success';
                     $json['alertMessage'] = $this->translator->trans('Success! Order has been updated successfully.');
                 }
-            } elseif ('DELETE' == $request->getMethod()) {
+            } elseif ('DELETE' === $request->getMethod()) {
                 // $this->isAuthorized(self::ROLE_REQUIRED_AUTO);
 
                 $em = $this->getDoctrine()->getManager();
@@ -101,23 +92,21 @@ class WorkflowXHR extends AbstractController
             $json['alertClass'] = 'danger';
             $json['alertMessage'] = $this->translator->trans('Warning! You are not allowed to perform this action.');
         }
-        $response = new Response(json_encode($json));
-        $response->headers->set('Content-Type', 'application/json');
 
-        return $response;
+        return new JsonResponse($json);
     }
 
-    public function getWorkflowConditionOptionsXHR($entity, Request $request)
+    public function getWorkflowConditionOptionsXHR($entity, Request $request): Response
     {
         $error = false;
         $json = $results = [];
         $supportedConditions = ['TicketPriority', 'TicketType', 'TicketStatus', 'source', 'agent', 'group', 'team', 'agent_name', 'agent_email', 'stage'];
 
         if (!$request->isXmlHttpRequest()) {
-            throw new Exception('', 404);
+            throw $this->createNotFoundException();
         }
-        if ('GET' != $request->getMethod() || !\in_array($entity, $supportedConditions)) {
-            throw new Exception('', 404);
+        if ('GET' !== $request->getMethod() || !\in_array($entity, $supportedConditions)) {
+            throw $this->createNotFoundException();
         }
 
         switch ($entity) {
@@ -194,26 +183,28 @@ class WorkflowXHR extends AbstractController
         //     $json = $this->getSerializeObj($ignoredArray)->serialize($results, 'json');
         // }
 
-        return new Response(\is_array($json) ? json_encode($json) : $json, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($json);
     }
 
-    public function getWorkflowActionOptionsXHR($entity, Request $request, ContainerInterface $container)
+    public function getWorkflowActionOptionsXHR($entity, Request $request, ContainerInterface $container): Response
     {
-        foreach ($this->workflowListnerService->getRegisteredWorkflowActions() as $workflowAction) {
+        foreach ($this->workflowListenerService->getRegisteredWorkflowActions() as $workflowAction) {
             if ($workflowAction->getId() == $entity) {
                 $options = $workflowAction->getOptions($container);
 
                 if (!empty($options)) {
-                    return new Response(json_encode($options), 200, ['Content-Type' => 'application/json']);
+                    return new JsonResponse($options);
                 }
 
                 break;
             }
         }
 
-        return new Response(json_encode([
-            'alertClass' => 'danger',
-            'alertMessage' => 'Warning! You are not allowed to perform this action.',
-        ]), 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse(
+            [
+                'alertClass' => 'danger',
+                'alertMessage' => 'Warning! You are not allowed to perform this action.',
+            ],
+        );
     }
 }

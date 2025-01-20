@@ -4,13 +4,14 @@ namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\AutomationBundle\Entity;
 use Webkul\UVDesk\AutomationBundle\EventListener\WorkflowListener;
 use Webkul\UVDesk\AutomationBundle\Form\DefaultForm;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
-class Workflow extends AbstractController
+final class Workflow extends AbstractController
 {
     public const ROLE_REQUIRED_AUTO = 'ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC';
     public const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
@@ -20,18 +21,13 @@ class Workflow extends AbstractController
     public const NAME_LENGTH = 100;
     public const DESCRIPTION_LENGTH = 200;
 
-    private $userService;
-    private $translator;
-    private $workflowListnerService;
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly WorkflowListener $workflowListenerService,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
-    public function __construct(UserService $userService, WorkflowListener $workflowListnerService, TranslatorInterface $translator)
-    {
-        $this->userService = $userService;
-        $this->workflowListnerService = $workflowListnerService;
-        $this->translator = $translator;
-    }
-
-    public function listWorkflowCollection(Request $request)
+    public function listWorkflowCollection(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -41,7 +37,7 @@ class Workflow extends AbstractController
     }
 
     // Creating workflow
-    public function createWorkflow(Request $request)
+    public function createWorkflow(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -174,7 +170,7 @@ class Workflow extends AbstractController
         ]);
     }
 
-    public function editWorkflow(Request $request)
+    public function editWorkflow(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -198,7 +194,7 @@ class Workflow extends AbstractController
                 ];
 
                 foreach ($workflow->getWorkflowEvents() as $event) {
-                    $eventDefinition = $this->workflowListnerService->getRegisteredWorkflowEvent($event->getEvent());
+                    $eventDefinition = $this->workflowListenerService->getRegisteredWorkflowEvent($event->getEvent());
 
                     if (!empty($eventDefinition)) {
                         $formData['events'][] = [
@@ -365,9 +361,9 @@ class Workflow extends AbstractController
     }
 
     // Remove Workflow
-    public function deleteWorkflow(Request $request) {}
+    public function deleteWorkflow(Request $request): void {}
 
-    public function translate($string, $params = [])
+    public function translate($string, $params = []): string
     {
         return $this->translator->trans($string, $params);
     }

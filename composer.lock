@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a532ad0276e5d700775b7b857faa5376",
+    "content-hash": "8e6fc94ba694ccf6700fb9d7314d494b",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5834,16 +5834,16 @@
         },
         {
             "name": "uvdesk/core-framework",
-            "version": "v1.2.9",
+            "version": "2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ksaveras/uvdesk-core-framework.git",
-                "reference": "7a073800c438fa5acb8e5bf7aef4df1b5c760890"
+                "reference": "d2b072eb1074db51c48658322d0a5f818e474ab4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ksaveras/uvdesk-core-framework/zipball/7a073800c438fa5acb8e5bf7aef4df1b5c760890",
-                "reference": "7a073800c438fa5acb8e5bf7aef4df1b5c760890",
+                "url": "https://api.github.com/repos/ksaveras/uvdesk-core-framework/zipball/d2b072eb1074db51c48658322d0a5f818e474ab4",
+                "reference": "d2b072eb1074db51c48658322d0a5f818e474ab4",
                 "shasum": ""
             },
             "require": {
@@ -5894,9 +5894,9 @@
             ],
             "description": "UVDesk Community Helpdesk Core Framework Bundle",
             "support": {
-                "source": "https://github.com/ksaveras/uvdesk-core-framework/tree/v1.2.9"
+                "source": "https://github.com/ksaveras/uvdesk-core-framework/tree/2.0"
             },
-            "time": "2025-01-20T20:34:23+00:00"
+            "time": "2025-01-20T21:02:37+00:00"
         }
     ],
     "packages-dev": [
@@ -7353,12 +7353,14 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {},
-    "prefer-stable": false,
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "uvdesk/core-framework": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.3"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"

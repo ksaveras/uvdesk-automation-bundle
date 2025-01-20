@@ -3,7 +3,6 @@
     "description": "UVDesk Community Helpdesk Automations Bundle",
     "type": "symfony-bundle",
     "license": "MIT",
-    "minimum-stability": "stable",
     "authors": [
         {
             "name": "UVdesk Support",
@@ -11,10 +10,18 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "uvdesk/core-framework": "^1.2",
+        "php": "^8.3",
+        "uvdesk/core-framework": "2.0.x-dev",
         "symfony/framework-bundle": "^5.4",
         "symfony/form": "^5.4"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.68",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0"
     },
     "autoload": {
         "psr-4": { "Webkul\\UVDesk\\AutomationBundle\\": "" }
@@ -25,14 +32,6 @@
             "url": "https://github.com/ksaveras/uvdesk-core-framework"
         }
     ],
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.68",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan-doctrine": "^2.0",
-        "phpstan/phpstan-strict-rules": "^2.0",
-        "phpstan/phpstan-symfony": "^2.0"
-    },
     "scripts": {
         "phpcs": "@php ./vendor/bin/php-cs-fixer fix --dry-run --diff",
         "phpcs:fix": "@php ./vendor/bin/php-cs-fixer fix",
@@ -42,5 +41,7 @@
         "allow-plugins": {
             "phpstan/extension-installer": true
         }
-    }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }

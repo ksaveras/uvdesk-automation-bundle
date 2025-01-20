@@ -5,6 +5,7 @@ namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webkul\UVDesk\AutomationBundle\Entity;
 use Webkul\UVDesk\AutomationBundle\Form\DefaultForm;
@@ -12,7 +13,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup;
 use Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
-class PreparedResponse extends AbstractController
+final class PreparedResponse extends AbstractController
 {
     public const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
     public const LIMIT = 20;
@@ -21,16 +22,12 @@ class PreparedResponse extends AbstractController
     public const NAME_LENGTH = 100;
     public const DESCRIPTION_LENGTH = 200;
 
-    private $userService;
-    private $translator;
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
-    public function __construct(UserService $userService, TranslatorInterface $translator)
-    {
-        $this->userService = $userService;
-        $this->translator = $translator;
-    }
-
-    public function prepareResponseList(Request $request)
+    public function prepareResponseList(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -39,7 +36,7 @@ class PreparedResponse extends AbstractController
         return $this->render('@UVDeskAutomation//PreparedResponse//preparedResponses.html.twig');
     }
 
-    public function createPrepareResponse(Request $request)
+    public function createPrepareResponse(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
@@ -184,7 +181,7 @@ class PreparedResponse extends AbstractController
         ]);
     }
 
-    public function editPrepareResponse(Request $request, ContainerInterface $container)
+    public function editPrepareResponse(Request $request, ContainerInterface $container): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));

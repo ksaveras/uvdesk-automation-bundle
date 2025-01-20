@@ -4,6 +4,7 @@ namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -11,7 +12,7 @@ use Webkul\UVDesk\AutomationBundle\Entity;
 use Webkul\UVDesk\AutomationBundle\EventListener\PreparedResponseListener;
 use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
-class PreparedResponseXHR extends AbstractController
+final class PreparedResponseXHR extends AbstractController
 {
     public const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
     public const LIMIT = 20;
@@ -20,40 +21,32 @@ class PreparedResponseXHR extends AbstractController
     public const NAME_LENGTH = 100;
     public const DESCRIPTION_LENGTH = 200;
 
-    private $userService;
-    private $translator;
-    private $preparedResponseListner;
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly PreparedResponseListener $preparedResponseListener,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
-    public function __construct(UserService $userService, PreparedResponseListener $preparedResponseListner, TranslatorInterface $translator)
-    {
-        $this->userService = $userService;
-        $this->translator = $translator;
-        $this->preparedResponseListner = $preparedResponseListner;
-    }
-
-    public function prepareResponseListXhr(Request $request, ContainerInterface $container)
+    public function prepareResponseListXhr(Request $request, ContainerInterface $container): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
-        $json = [];
         $repository = $this->getDoctrine()->getRepository(Entity\PreparedResponses::class);
-        $json = $repository->getPreparesResponses($request->query, $container);
-        $response = new Response(json_encode($json));
-        $response->headers->set('Content-Type', 'application/json');
+        $jsonData = $repository->getPreparesResponses($request->query, $container);
 
-        return $response;
+        return new JsonResponse($jsonData);
     }
 
-    public function prepareResponseDeleteXhr(Request $request)
+    public function prepareResponseDeleteXhr(Request $request): Response
     {
         if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $json = [];
-        if ('DELETE' == $request->getMethod()) {
+        if ('DELETE' === $request->getMethod()) {
             $em = $this->getDoctrine()->getManager();
             $id = $request->attributes->get('id');
             $preparedResponses = $em->getRepository(Entity\PreparedResponses::class)->find($id);
@@ -65,29 +58,28 @@ class PreparedResponseXHR extends AbstractController
             $json['alertMessage'] = $this->translator->trans('Success ! Prepared response removed successfully.');
         }
 
-        $response = new Response(json_encode($json));
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return new JsonResponse($json);
     }
 
-    public function getPreparedResponseActionOptionsXHR($entity, Request $request, ContainerInterface $container)
+    public function getPreparedResponseActionOptionsXHR($entity, Request $request, ContainerInterface $container): Response
     {
-        foreach ($this->preparedResponseListner->getRegisteredPreparedResponseActions() as $preparedResponseAction) {
+        foreach ($this->preparedResponseListener->getRegisteredPreparedResponseActions() as $preparedResponseAction) {
             if ($preparedResponseAction->getId() == $entity) {
                 $options = $preparedResponseAction->getOptions($container);
 
                 if (!empty($options)) {
-                    return new Response(json_encode($options), 200, ['Content-Type' => 'application/json']);
+                    return new JsonResponse($options);
                 }
 
                 break;
             }
         }
 
-        return new Response(json_encode([
-            'alertClass' => 'danger',
-            'alertMessage' => 'Warning! You are not allowed to perform this action.',
-        ]), 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse(
+            [
+                'alertClass' => 'danger',
+                'alertMessage' => 'Warning! You are not allowed to perform this action.',
+            ],
+        );
     }
 }
