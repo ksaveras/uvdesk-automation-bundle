@@ -3,6 +3,7 @@
     "description": "UVDesk Community Helpdesk Automations Bundle",
     "type": "symfony-bundle",
     "license": "MIT",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "UVdesk Support",
@@ -11,14 +12,13 @@
     ],
     "require": {
         "php": "^8.0",
-        "uvdesk/core-framework": "dev-main",
+        "uvdesk/core-framework": "^1.2",
         "symfony/framework-bundle": "^5.4",
         "symfony/form": "^5.4"
     },
     "autoload": {
         "psr-4": { "Webkul\\UVDesk\\AutomationBundle\\": "" }
     },
-    "minimum-stability": "stable",
     "repositories": [
         {
             "type": "vcs",
