@@ -1,89 +1,103 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
 /**
- * Workflow
+ * Workflow.
+ *
  * @ORM\HasLifecycleCallbacks
+ *
  * @ORM\Entity(repositoryClass="Webkul\UVDesk\AutomationBundle\Repository\WorkflowRepository")
+ *
  * @ORM\Table(name="uv_workflow")
  */
 class Workflow
 {
     /**
-     * @var integer
+     * @var int
+     *
      * @ORM\Id;
+     *
      * @ORM\Column(type="integer")
+     *
      * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=191) 
+     *
+     * @ORM\Column(type="string", length=191)
      */
     private $name;
 
     /**
      * @var string
+     *
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
 
     /**
      * @var array
+     *
      * @ORM\Column(type="array")
      */
     private $conditions;
 
     /**
      * @var array
+     *
      * @ORM\Column(type="array")
      */
     private $actions;
 
     /**
-     * @var integer
+     * @var int
+     *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $sortOrder;
 
     /**
-     * @var boolean
+     * @var bool
+     *
      * @ORM\Column(type="boolean", options={"default": true})
      */
     private $isPredefind = true;
 
     /**
-     * @var boolean
+     * @var bool
+     *
      * @ORM\Column(type="boolean", options={"default": true})
      */
     private $status = true;
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     private $dateAdded;
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     private $dateUpdated;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\OneToMany(targetEntity="Webkul\UVDesk\AutomationBundle\Entity\WorkflowEvents", mappedBy="workflow")
-     * 
      */
     private $workflowEvents;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -91,9 +105,9 @@ class Workflow
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -101,7 +115,7 @@ class Workflow
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -115,7 +129,7 @@ class Workflow
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -125,7 +139,7 @@ class Workflow
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
      *
@@ -139,7 +153,7 @@ class Workflow
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string
      */
@@ -149,7 +163,7 @@ class Workflow
     }
 
     /**
-     * Set conditions
+     * Set conditions.
      *
      * @param array $conditions
      *
@@ -163,7 +177,7 @@ class Workflow
     }
 
     /**
-     * Get conditions
+     * Get conditions.
      *
      * @return array
      */
@@ -173,7 +187,7 @@ class Workflow
     }
 
     /**
-     * Set actions
+     * Set actions.
      *
      * @param array $actions
      *
@@ -187,7 +201,7 @@ class Workflow
     }
 
     /**
-     * Get actions
+     * Get actions.
      *
      * @return array
      */
@@ -197,9 +211,9 @@ class Workflow
     }
 
     /**
-     * Set sortOrder
+     * Set sortOrder.
      *
-     * @param integer $sortOrder
+     * @param int $sortOrder
      *
      * @return Workflow
      */
@@ -211,9 +225,9 @@ class Workflow
     }
 
     /**
-     * Get sortOrder
+     * Get sortOrder.
      *
-     * @return integer
+     * @return int
      */
     public function getSortOrder()
     {
@@ -221,9 +235,9 @@ class Workflow
     }
 
     /**
-     * Set isPredefind
+     * Set isPredefind.
      *
-     * @param boolean $isPredefind
+     * @param bool $isPredefind
      *
      * @return Workflow
      */
@@ -235,9 +249,9 @@ class Workflow
     }
 
     /**
-     * Get isPredefind
+     * Get isPredefind.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsPredefind()
     {
@@ -245,9 +259,9 @@ class Workflow
     }
 
     /**
-     * Set status
+     * Set status.
      *
-     * @param boolean $status
+     * @param bool $status
      *
      * @return Workflow
      */
@@ -259,9 +273,9 @@ class Workflow
     }
 
     /**
-     * Get status
+     * Get status.
      *
-     * @return boolean
+     * @return bool
      */
     public function getStatus()
     {
@@ -269,7 +283,7 @@ class Workflow
     }
 
     /**
-     * Set dateAdded
+     * Set dateAdded.
      *
      * @param \DateTime $dateAdded
      *
@@ -283,7 +297,7 @@ class Workflow
     }
 
     /**
-     * Get dateAdded
+     * Get dateAdded.
      *
      * @return \DateTime
      */
@@ -293,7 +307,7 @@ class Workflow
     }
 
     /**
-     * Set dateUpdated
+     * Set dateUpdated.
      *
      * @param \DateTime $dateUpdated
      *
@@ -307,7 +321,7 @@ class Workflow
     }
 
     /**
-     * Get dateUpdated
+     * Get dateUpdated.
      *
      * @return \DateTime
      */
@@ -317,13 +331,11 @@ class Workflow
     }
 
     /**
-     * Add workflowEvent
-     *
-     * @param \Webkul\UVDesk\AutomationBundle\Entity\WorkflowEvents $workflowEvent
+     * Add workflowEvent.
      *
      * @return Workflow
      */
-    public function addWorkflowEvent(\Webkul\UVDesk\AutomationBundle\Entity\WorkflowEvents $workflowEvent)
+    public function addWorkflowEvent(WorkflowEvents $workflowEvent)
     {
         $this->workflowEvents[] = $workflowEvent;
 
@@ -331,17 +343,15 @@ class Workflow
     }
 
     /**
-     * Remove workflowEvent
-     *
-     * @param \Webkul\UVDesk\AutomationBundle\Entity\WorkflowEvents $workflowEvent
+     * Remove workflowEvent.
      */
-    public function removeWorkflowEvent(\Webkul\UVDesk\AutomationBundle\Entity\WorkflowEvents $workflowEvent)
+    public function removeWorkflowEvent(WorkflowEvents $workflowEvent)
     {
         $this->workflowEvents->removeElement($workflowEvent);
     }
 
     /**
-     * Get workflowEvents
+     * Get workflowEvents.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -349,6 +359,7 @@ class Workflow
     {
         return $this->workflowEvents;
     }
+
     /**
      * @ORM\PrePersist
      */
@@ -365,4 +376,3 @@ class Workflow
         // Add your code here
     }
 }
-

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Event;
 
@@ -7,13 +7,21 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ActivityEvent extends Event
 {
     private $eventName;
+
     private $entity;
+
     private $container;
+
     private $user;
+
     private $targetEntity;
+
     private $userType;
+
     private $notePlaceholders;
+
     private $subject;
+
     private $socialMedium;
 
     public function __construct($container)
@@ -21,22 +29,27 @@ class ActivityEvent extends Event
         $this->container = $container;
     }
 
-    public function setParameters($params) {
+    public function setParameters($params)
+    {
         $this->eventName = $params['event'];
         $this->userType = isset($params['userType']) ? $params['userType'] : 'agent';
         $this->entity = $params['entity'];
 
-        if(isset($params['notePlaceholders']))
+        if (isset($params['notePlaceholders'])) {
             $this->notePlaceholders = $params['notePlaceholders'];
+        }
 
-        if(isset($params['targetEntity']))
+        if (isset($params['targetEntity'])) {
             $this->targetEntity = $params['targetEntity'];
+        }
 
-        if(isset($params['user']))
+        if (isset($params['user'])) {
             $this->user = $params['user'];
+        }
 
-        if(isset($params['subject']) && $params['subject'] != '')
+        if (isset($params['subject']) && '' != $params['subject']) {
             $this->subject = $params['subject'];
+        }
 
         $this->socialMedium = isset($params['socialMedium']) ? $params['socialMedium'] : false;
     }
@@ -74,11 +87,11 @@ class ActivityEvent extends Event
     public function getCurrentUser()
     {
         $user = $this->container->get('user.service')->getSessionUser();
-        if ($user)
+        if ($user) {
             return $user;
-        else {
-            return $this->user;
         }
+
+        return $this->user;
     }
 
     public function getSubject()

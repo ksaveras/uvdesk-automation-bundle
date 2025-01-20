@@ -1,11 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\PreparedResponse;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\Loader\YamlFileLoader;
-use Symfony\Component\HttpFoundation\Request;
 
 abstract class Action
 {
@@ -23,7 +20,8 @@ abstract class Action
     {
         return null;
     }
-    
+
     abstract public static function getOptions(ContainerInterface $container);
+
     abstract public static function applyAction(ContainerInterface $container, $entity, $value);
 }

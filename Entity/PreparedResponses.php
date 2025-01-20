@@ -1,72 +1,84 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PreparedResponses
+ * PreparedResponses.
+ *
  * @ORM\HasLifecycleCallbacks()
+ *
  * @ORM\Entity(repositoryClass="Webkul\UVDesk\AutomationBundle\Repository\PreparedResponsesRepository")
+ *
  * @ORM\Table(name="uv_prepared_responses")
  */
-
 class PreparedResponses
 {
     /**
-     * @var integer
+     * @var int
+     *
      * @ORM\Id()
+     *
      * @ORM\Column(type="integer")
+     *
      * @ORM\GeneratedValue
      */
     private $id;
 
     /**
      * @var string
+     *
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
      * @var string
+     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $description;
 
     /**
      * @var string
+     *
      * @ORM\Column(type="string", length=255, nullable=true, options={"default": "public"})
      */
     private $type;
 
     /**
      * @var array
+     *
      * @ORM\Column(type="array")
      */
     private $actions;
 
     /**
-     * @var boolean
+     * @var bool
+     *
      * @ORM\Column(type="boolean", nullable=true, options={"default": true})
      */
     private $status;
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     private $dateAdded;
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     private $dateUpdated;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -74,9 +86,10 @@ class PreparedResponses
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return PreparedResponses
      */
     public function setName($name)
@@ -87,9 +100,9 @@ class PreparedResponses
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -97,9 +110,10 @@ class PreparedResponses
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return PreparedResponses
      */
     public function setDescription($description)
@@ -110,9 +124,9 @@ class PreparedResponses
     }
 
     /**
-     * Get description
+     * Get description.
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -120,9 +134,10 @@ class PreparedResponses
     }
 
     /**
-     * Set type
+     * Set type.
      *
      * @param string $type
+     *
      * @return PreparedResponses
      */
     public function setType($type)
@@ -133,9 +148,9 @@ class PreparedResponses
     }
 
     /**
-     * Get type
+     * Get type.
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -143,9 +158,10 @@ class PreparedResponses
     }
 
     /**
-     * Set actions
+     * Set actions.
      *
      * @param array $actions
+     *
      * @return PreparedResponses
      */
     public function setActions($actions)
@@ -156,9 +172,9 @@ class PreparedResponses
     }
 
     /**
-     * Get actions
+     * Get actions.
      *
-     * @return array 
+     * @return array
      */
     public function getActions()
     {
@@ -166,9 +182,10 @@ class PreparedResponses
     }
 
     /**
-     * Set status
+     * Set status.
      *
-     * @param boolean $status
+     * @param bool $status
+     *
      * @return PreparedResponses
      */
     public function setStatus($status)
@@ -179,9 +196,9 @@ class PreparedResponses
     }
 
     /**
-     * Get status
+     * Get status.
      *
-     * @return boolean 
+     * @return bool
      */
     public function getStatus()
     {
@@ -189,9 +206,10 @@ class PreparedResponses
     }
 
     /**
-     * Set dateAdded
+     * Set dateAdded.
      *
      * @param \DateTime $dateAdded
+     *
      * @return PreparedResponses
      */
     public function setDateAdded($dateAdded)
@@ -202,9 +220,9 @@ class PreparedResponses
     }
 
     /**
-     * Get dateAdded
+     * Get dateAdded.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateAdded()
     {
@@ -212,9 +230,10 @@ class PreparedResponses
     }
 
     /**
-     * Set dateUpdated
+     * Set dateUpdated.
      *
      * @param \DateTime $dateUpdated
+     *
      * @return PreparedResponses
      */
     public function setDateUpdated($dateUpdated)
@@ -225,9 +244,9 @@ class PreparedResponses
     }
 
     /**
-     * Get dateUpdated
+     * Get dateUpdated.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateUpdated()
     {
@@ -252,19 +271,19 @@ class PreparedResponses
     }
     /**
      * @var \Webkul\UserBundle\Entity\UserData
+     *
      * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance")
+     *
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="SET NULL")
      */
     private $user;
 
-
     /**
-     * Set user
+     * Set user.
      *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance $user
      * @return PreparedResponses
      */
-    public function setUser(\Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance $user = null)
+    public function setUser(?\Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance $user = null)
     {
         $this->user = $user;
 
@@ -272,9 +291,9 @@ class PreparedResponses
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance 
+     * @return \Webkul\UVDesk\CoreFrameworkBundle\Entity\UserInstance
      */
     public function getUser()
     {
@@ -285,7 +304,9 @@ class PreparedResponses
      */
     /**
      * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\ManyToMany(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup")
+     *
      * @ORM\JoinTable(name="uv_prepared_response_support_groups",
      *      joinColumns={@ORM\JoinColumn(name="savedReply_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -295,7 +316,9 @@ class PreparedResponses
 
     /**
      * @var \Doctrine\Common\Collections\Collection
+     *
      * @ORM\ManyToMany(targetEntity="Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam")
+     *
      * @ORM\JoinTable(name="uv_prepared_response_support_teams",
      *      joinColumns={@ORM\JoinColumn(name="savedReply_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="subgroup_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -304,7 +327,7 @@ class PreparedResponses
     private $teams;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -313,9 +336,8 @@ class PreparedResponses
     }
 
     /**
-     * Add groups
+     * Add groups.
      *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup $groups
      * @return PreparedResponses
      */
     public function addGroup(\Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup $groups)
@@ -326,9 +348,7 @@ class PreparedResponses
     }
 
     /**
-     * Remove groups
-     *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup $groups
+     * Remove groups.
      */
     public function removeGroup(\Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportGroup $groups)
     {
@@ -336,9 +356,9 @@ class PreparedResponses
     }
 
     /**
-     * Get groups
+     * Get groups.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getGroups()
     {
@@ -346,9 +366,8 @@ class PreparedResponses
     }
 
     /**
-     * Add teams
+     * Add teams.
      *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam $teams
      * @return PreparedResponses
      */
     public function addTeam(\Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam $teams)
@@ -359,9 +378,7 @@ class PreparedResponses
     }
 
     /**
-     * Remove teams
-     *
-     * @param \Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam $teams
+     * Remove teams.
      */
     public function removeTeam(\Webkul\UVDesk\CoreFrameworkBundle\Entity\SupportTeam $teams)
     {
@@ -369,9 +386,9 @@ class PreparedResponses
     }
 
     /**
-     * Get teams
+     * Get teams.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getTeams()
     {

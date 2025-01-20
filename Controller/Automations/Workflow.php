@@ -1,32 +1,30 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Webkul\UVDesk\AutomationBundle\Form\DefaultForm;
-use Webkul\UVDesk\AutomationBundle\Entity;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
-use Webkul\UVDesk\AutomationBundle\EventListener\WorkflowListener;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webkul\UVDesk\AutomationBundle\Entity;
+use Webkul\UVDesk\AutomationBundle\EventListener\WorkflowListener;
+use Webkul\UVDesk\AutomationBundle\Form\DefaultForm;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
 class Workflow extends AbstractController
 {
+    public const ROLE_REQUIRED_AUTO = 'ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC';
+    public const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
+    public const LIMIT = 20;
+    public const WORKFLOW_MANUAL = 0;
+    public const WORKFLOW_AUTOMATIC = 1;
+    public const NAME_LENGTH = 100;
+    public const DESCRIPTION_LENGTH = 200;
 
-    const ROLE_REQUIRED_AUTO = 'ROLE_AGENT_MANAGE_WORKFLOW_AUTOMATIC';
-    const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
-    const LIMIT = 20;
-    const WORKFLOW_MANUAL = 0;
-    const WORKFLOW_AUTOMATIC = 1;
-    const NAME_LENGTH = 100;
-    const DESCRIPTION_LENGTH = 200;
-    
     private $userService;
     private $translator;
     private $workflowListnerService;
-    
-    public function __construct(UserService $userService, WorkflowListener $workflowListnerService,TranslatorInterface $translator)
+
+    public function __construct(UserService $userService, WorkflowListener $workflowListnerService, TranslatorInterface $translator)
     {
         $this->userService = $userService;
         $this->workflowListnerService = $workflowListnerService;
@@ -56,7 +54,7 @@ class Workflow extends AbstractController
 
         $form = $this->createForm(DefaultForm::class);
 
-        if($request->request->all()) {
+        if ($request->request->all()) {
             $form->submit($request->request->all());
         }
 
@@ -65,7 +63,7 @@ class Workflow extends AbstractController
             $workflowClass = 'Webkul\UVDesk\AutomationBundle\Entity\Workflow';
             $workflowActionsArray = $request->request->get('actions');
 
-            if (strlen($formData->get('description')) > self::DESCRIPTION_LENGTH) {
+            if (\strlen($formData->get('description')) > self::DESCRIPTION_LENGTH) {
                 $error['description'] = $this->translate('Warning! Please add valid Description! Length must not be greater than %desc%', ['%desc%' => self::DESCRIPTION_LENGTH]);
             }
 
@@ -104,13 +102,12 @@ class Workflow extends AbstractController
                 }
             }
 
-          
             if (empty($error)) {
                 // Check if new workflow and old one belong to the same class
                 if (!empty($workflow) && $workflow instanceof $workflowClass) {
                     $newWorkflow = $workflow;
                 } else {
-                    $newWorkflow = new $workflowClass;
+                    $newWorkflow = new $workflowClass();
                     if (!empty($workflow)) {
                         $entityManager->remove($workflow);
                         $entityManager->flush();
@@ -119,13 +116,12 @@ class Workflow extends AbstractController
 
                 $newWorkflow->setName($formData->get('name'));
                 $newWorkflow->setDescription($formData->get('description'));
-                $newWorkflow->setStatus($formData->get('status') == 'on' ? true : false);
+                $newWorkflow->setStatus('on' == $formData->get('status') ? true : false);
                 $newWorkflow->setActions($workflowActionsArray);
-                $newWorkflow->setDateAdded(new \Datetime);
-                $newWorkflow->setDateUpdated(new \Datetime);
-                
+                $newWorkflow->setDateAdded(new \DateTime());
+                $newWorkflow->setDateUpdated(new \DateTime());
 
-                $formDataGetEvents = array_unique($formData->get('events'), SORT_REGULAR);
+                $formDataGetEvents = array_unique($formData->get('events'), \SORT_REGULAR);
                 if ($newWorkflow->getWorkflowEvents()) {
                     foreach ($newWorkflow->getWorkflowEvents() as $newWorkflowEvent) {
                         if ($thisKey = array_search(['event' => current($exNewEventEvent = explode('.', $newWorkflowEvent->getEvent())), 'trigger' => end($exNewEventEvent)], $formDataGetEvents)) {
@@ -143,7 +139,7 @@ class Workflow extends AbstractController
                 $entityManager->flush();
 
                 foreach ($formDataGetEvents as $eventEvents) {
-                    $event = new Entity\WorkflowEvents;
+                    $event = new Entity\WorkflowEvents();
                     $event->setEvent($eventEvents['trigger']);
                     $event->setWorkflow($newWorkflow);
                     $event->setEventId($newWorkflow->getId());
@@ -153,7 +149,7 @@ class Workflow extends AbstractController
 
                 $this->addFlash('success', $request->attributes->get('id')
                     ? $this->translator->trans('Success! Workflow has been updated successfully.')
-                    :  $this->translator->trans('Success! Workflow has been added successfully.')
+                    : $this->translator->trans('Success! Workflow has been added successfully.')
                 );
 
                 return $this->redirectToRoute('helpdesk_member_workflow_collection');
@@ -169,13 +165,13 @@ class Workflow extends AbstractController
                 'conditions' => $request->request->get('conditions'),
             ];
         }
-      
-        return $this->render('@UVDeskAutomation//Workflow//createWorkflow.html.twig', array(
+
+        return $this->render('@UVDeskAutomation//Workflow//createWorkflow.html.twig', [
             'form' => $form->createView(),
             'error' => $error,
             'formerror' => $formerror,
             'formData' => $formData,
-        ));
+        ]);
     }
 
     public function editWorkflow(Request $request)
@@ -221,17 +217,17 @@ class Workflow extends AbstractController
 
         $form = $this->createForm(DefaultForm::class);
 
-        if($request->request->all()) {
+        if ($request->request->all()) {
             $form->submit($request->request->all());
         }
 
         if ($form->isSubmitted()) {
             $formData = $request->request;
-            
+
             $workflowClass = 'Webkul\UVDesk\AutomationBundle\Entity\Workflow';
             $workflowActionsArray = $request->request->get('actions');
 
-            if (strlen($formData->get('description')) > self::DESCRIPTION_LENGTH) {
+            if (\strlen($formData->get('description')) > self::DESCRIPTION_LENGTH) {
                 $error['description'] = $this->translate('Warning! Please add valid Description! Length must not be greater than %desc%', ['%desc%' => self::DESCRIPTION_LENGTH]);
             }
 
@@ -265,14 +261,14 @@ class Workflow extends AbstractController
             }
 
             /*
-                @NOTICE: Events 'uvdesk.agent.forgot_password', 'uvdesk.customer.forgot_password' will be deprecated 
-                onwards uvdesk/automation-bundle:1.0.2 and uvdesk/core-framework:1.0.3 releases and will be 
+                @NOTICE: Events 'uvdesk.agent.forgot_password', 'uvdesk.customer.forgot_password' will be deprecated
+                onwards uvdesk/automation-bundle:1.0.2 and uvdesk/core-framework:1.0.3 releases and will be
                 completely removed with the next major release.
             */
             foreach ($workflowEventsArray as $eventAttributes) {
-                if ($eventAttributes['event'] == 'agent' && $eventAttributes['trigger'] == 'uvdesk.user.forgot_password') {
+                if ('agent' == $eventAttributes['event'] && 'uvdesk.user.forgot_password' == $eventAttributes['trigger']) {
                     $error['events'][] = $this->translate('"Agent Forgot Password" has been deprecated. Please use the "User Forgot Password" event instead.');
-                } else if ($eventAttributes['event'] == 'customer' && $eventAttributes['trigger'] == 'uvdesk.user.forgot_password') {
+                } elseif ('customer' == $eventAttributes['event'] && 'uvdesk.user.forgot_password' == $eventAttributes['trigger']) {
                     $error['events'][] = $this->translate('"Customer Forgot Password" has been deprecated. Please use the "User Forgot Password" event instead.');
                 }
             }
@@ -291,7 +287,7 @@ class Workflow extends AbstractController
                 if (!empty($workflow) && $workflow instanceof $workflowClass) {
                     $newWorkflow = $workflow;
                 } else {
-                    $newWorkflow = new $workflowClass;
+                    $newWorkflow = new $workflowClass();
                     if (!empty($workflow)) {
                         $entityManager->remove($workflow);
                         $entityManager->flush();
@@ -300,18 +296,18 @@ class Workflow extends AbstractController
 
                 $newWorkflow->setName($formData->get('name'));
                 $newWorkflow->setDescription($formData->get('description'));
-                $newWorkflow->setStatus($formData->get('status') == 'on' ? true : false);
+                $newWorkflow->setStatus('on' == $formData->get('status') ? true : false);
                 $newWorkflow->setActions($workflowActionsArray);
-                $newWorkflow->setDateAdded(new \Datetime);
-                $newWorkflow->setDateUpdated(new \Datetime);
+                $newWorkflow->setDateAdded(new \DateTime());
+                $newWorkflow->setDateUpdated(new \DateTime());
 
-                $formDataGetEvents = array_unique($formData->get('events'), SORT_REGULAR);
+                $formDataGetEvents = array_unique($formData->get('events'), \SORT_REGULAR);
 
                 if ($newWorkflow->getWorkflowEvents()) {
                     foreach ($newWorkflow->getWorkflowEvents() as $newWorkflowEvent) {
                         if ($thisKey = array_search([
-                            'event' => current($exNewEventEvent = explode('.', $newWorkflowEvent->getEvent())), 
-                            'trigger' => end($exNewEventEvent)
+                            'event' => current($exNewEventEvent = explode('.', $newWorkflowEvent->getEvent())),
+                            'trigger' => end($exNewEventEvent),
                         ], $formDataGetEvents)) {
                             unset($formDataGetEvents[$thisKey]);
                         } else {
@@ -327,7 +323,7 @@ class Workflow extends AbstractController
                 $entityManager->flush();
 
                 foreach ($formDataGetEvents as $eventEvents) {
-                    $event = new Entity\WorkflowEvents;
+                    $event = new Entity\WorkflowEvents();
                     $event->setEvent($eventEvents['trigger']);
                     $event->setWorkflow($newWorkflow);
                     $event->setEventId($newWorkflow->getId());
@@ -338,15 +334,14 @@ class Workflow extends AbstractController
 
                 $this->addFlash('success', $request->attributes->get('id')
                     ? $this->translator->trans('Success! Workflow has been updated successfully.')
-                    :  $this->translator->trans('Success! Workflow has been added successfully.')
+                    : $this->translator->trans('Success! Workflow has been added successfully.')
                 );
 
                 return $this->redirectToRoute('helpdesk_member_workflow_collection');
-            } else {
-                if (!empty($error['events'])) {
-                    foreach ($error['events'] as $message) {
-                        $this->addFlash('warning', $this->translator->trans("Events: " . $message));
-                    }
+            }
+            if (!empty($error['events'])) {
+                foreach ($error['events'] as $message) {
+                    $this->addFlash('warning', $this->translator->trans('Events: '.$message));
                 }
             }
 
@@ -360,22 +355,20 @@ class Workflow extends AbstractController
                 'conditions' => $request->request->get('conditions'),
             ];
         }
-      
-        return $this->render('@UVDeskAutomation//Workflow//editWorkflow.html.twig', array(
+
+        return $this->render('@UVDeskAutomation//Workflow//editWorkflow.html.twig', [
             'form' => $form->createView(),
             'error' => $error,
             'formerror' => $formerror,
             'formData' => $formData,
-        ));
+        ]);
     }
 
-    //Remove Workflow
-    public function deleteWorkflow(Request $request)
-    {
+    // Remove Workflow
+    public function deleteWorkflow(Request $request) {}
 
-    } 
-    public function translate($string,$params = array())
+    public function translate($string, $params = [])
     {
-        return $this->translator->trans($string,$params);
+        return $this->translator->trans($string, $params);
     }
 }

@@ -1,49 +1,58 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * WorkflowEvents
+ * WorkflowEvents.
+ *
  * @ORM\HasLifecycleCallbacks
+ *
  * @ORM\Entity(repositoryClass="Webkul\UVDesk\AutpmationBundle\Repository\WorkflowEventsRepository")
+ *
  * @ORM\Table(name="uv_workflow_events")
  */
 class WorkflowEvents
 {
     /**
-     * @var integer
+     * @var int
+     *
      * @ORM\Id()
+     *
      * @ORM\Column(type="integer")
+     *
      * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @var integer
+     * @var int
+     *
      * @ORM\Column(type="integer")
      */
     private $eventId;
 
     /**
      * @var string
+     *
      * @ORM\Column(type="string", length=191)
      */
     private $event;
 
     /**
-     * @var \Webkul\UVDesk\AutomationBundle\Entity\Workflow
+     * @var Workflow
+     *
      * @ORM\ManyToOne(targetEntity="Webkul\UVDesk\AutomationBundle\Entity\Workflow", inversedBy="WorkflowEvents")
+     *
      * @ORM\JoinColumn(name="workflow_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $workflow;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -51,9 +60,9 @@ class WorkflowEvents
     }
 
     /**
-     * Set eventId
+     * Set eventId.
      *
-     * @param integer $eventId
+     * @param int $eventId
      *
      * @return WorkflowEvents
      */
@@ -65,9 +74,9 @@ class WorkflowEvents
     }
 
     /**
-     * Get eventId
+     * Get eventId.
      *
-     * @return integer
+     * @return int
      */
     public function getEventId()
     {
@@ -75,7 +84,7 @@ class WorkflowEvents
     }
 
     /**
-     * Set event
+     * Set event.
      *
      * @param string $event
      *
@@ -89,7 +98,7 @@ class WorkflowEvents
     }
 
     /**
-     * Get event
+     * Get event.
      *
      * @return string
      */
@@ -99,13 +108,11 @@ class WorkflowEvents
     }
 
     /**
-     * Set workflow
-     *
-     * @param \Webkul\UVDesk\AutomationBundle\Entity\Workflow $workflow
+     * Set workflow.
      *
      * @return WorkflowEvents
      */
-    public function setWorkflow(\Webkul\UVDesk\AutomationBundle\Entity\Workflow $workflow = null)
+    public function setWorkflow(?Workflow $workflow = null)
     {
         $this->workflow = $workflow;
 
@@ -113,13 +120,12 @@ class WorkflowEvents
     }
 
     /**
-     * Get workflow
+     * Get workflow.
      *
-     * @return \Webkul\UVDesk\AutomationBundle\Entity\Workflow
+     * @return Workflow
      */
     public function getWorkflow()
     {
         return $this->workflow;
     }
 }
-

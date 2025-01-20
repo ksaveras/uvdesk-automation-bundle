@@ -1,12 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\PreparedResponse;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 abstract class FunctionalGroup
 {
-    const AGENT = 'agent';
-    const TICKET = 'ticket';
-    const CUSTOMER = 'customer';
+    public const AGENT = 'agent';
+    public const TICKET = 'ticket';
+    public const CUSTOMER = 'customer';
 }

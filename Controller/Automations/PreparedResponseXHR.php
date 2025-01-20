@@ -1,34 +1,30 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Webkul\UVDesk\AutomationBundle\Controller\Automations;
 
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Webkul\UVDesk\AutomationBundle\Form;
-use Webkul\UVDesk\AutomationBundle\Entity;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webkul\UVDesk\AutomationBundle\Entity;
 use Webkul\UVDesk\AutomationBundle\EventListener\PreparedResponseListener;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Services\UserService;
 
 class PreparedResponseXHR extends AbstractController
 {
-    const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
-    const LIMIT = 20;
-    const WORKFLOW_MANUAL = 0;
-    const WORKFLOW_AUTOMATIC = 1;
-    const NAME_LENGTH = 100;
-    const DESCRIPTION_LENGTH = 200;
+    public const ROLE_REQUIRED_MANUAL = 'ROLE_AGENT_MANAGE_WORKFLOW_MANUAL';
+    public const LIMIT = 20;
+    public const WORKFLOW_MANUAL = 0;
+    public const WORKFLOW_AUTOMATIC = 1;
+    public const NAME_LENGTH = 100;
+    public const DESCRIPTION_LENGTH = 200;
 
     private $userService;
     private $translator;
     private $preparedResponseListner;
 
-    public function __construct(UserService $userService, PreparedResponseListener $preparedResponseListner ,TranslatorInterface $translator)
+    public function __construct(UserService $userService, PreparedResponseListener $preparedResponseListner, TranslatorInterface $translator)
     {
         $this->userService = $userService;
         $this->translator = $translator;
@@ -37,7 +33,7 @@ class PreparedResponseXHR extends AbstractController
 
     public function prepareResponseListXhr(Request $request, ContainerInterface $container)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {          
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
@@ -46,17 +42,18 @@ class PreparedResponseXHR extends AbstractController
         $json = $repository->getPreparesResponses($request->query, $container);
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
     public function prepareResponseDeleteXhr(Request $request)
     {
-        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {          
+        if (!$this->userService->isAccessAuthorized('ROLE_AGENT_MANAGE_WORKFLOW_MANUAL')) {
             return $this->redirect($this->generateUrl('helpdesk_member_dashboard'));
         }
 
         $json = [];
-        if($request->getMethod() == "DELETE") {
+        if ('DELETE' == $request->getMethod()) {
             $em = $this->getDoctrine()->getManager();
             $id = $request->attributes->get('id');
             $preparedResponses = $em->getRepository(Entity\PreparedResponses::class)->find($id);
@@ -70,6 +67,7 @@ class PreparedResponseXHR extends AbstractController
 
         $response = new Response(json_encode($json));
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
